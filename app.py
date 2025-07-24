@@ -29,14 +29,14 @@ if st.button("🚦 Calculate My Score"):
     total_score = energy + (10 - focus) + motivation + confidence + recovery + mood + appearance
     percent_score = int((total_score / 70) * 100)
 
-    st.markdown(f"## 🧠 Your Performance Score: **{percent_score}/100**")
+    st.markdown(f"## 🧠 Your Performance Score: <span style='color:black; font-weight:bold;'>{percent_score}/100</span>", unsafe_allow_html=True)
 
     if percent_score >= 80:
-        st.success("🔥 **Peak Performer in Progress**\nKeep the momentum going! Test Drive can help you optimize further.")
+        st.markdown("<div style='background-color:#DFF0D8;padding:10px;border-radius:5px'><strong>🔥 Peak Performer in Progress</strong><br>Keep the momentum going! Test Drive can help you optimize further.</div>", unsafe_allow_html=True)
     elif percent_score >= 60:
-        st.warning("⚠️ **Your Engine Needs Tuning**\nYou're on the edge — Test Drive can help restore your drive, mood, and energy.")
+        st.markdown("<div style='background-color:#FCF8E3;padding:10px;border-radius:5px'><strong>⚠️ Your Engine Needs Tuning</strong><br>You're on the edge — Test Drive can help restore your drive, mood, and energy.</div>", unsafe_allow_html=True)
     else:
-        st.error("🛑 **Time to Reignite Your Drive**\nYou're not alone — many men feel this way. Test Drive is scientifically designed to help you reboot.")
+        st.markdown("<div style='background-color:#F2DEDE;padding:10px;border-radius:5px'><strong>🛑 Time to Reignite Your Drive</strong><br>You're not alone — many men feel this way. Test Drive is scientifically designed to help you reboot.</div>", unsafe_allow_html=True)
 
     st.markdown("### ✅ About Test Drive")
     st.markdown("""
