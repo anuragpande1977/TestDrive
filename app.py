@@ -35,7 +35,7 @@ if st.button("🚦 Calculate My Score"):
     st.markdown(f"## 🧠 Your Performance Score: <span style='color:black; font-weight:bold;'>{percent_score}/100</span>", unsafe_allow_html=True)
 
     if percent_score >= 80:
-        st.markdown("<div style='background-color:#DFF0D8;padding:10px;border-radius:5px'><strong>🔥 Peak Performer in Progress</strong><br>Keep the momentum going! Test Drive can help you optimize further.</div>", unsafe_allow_html=True)
+        st.markdown("<div style='background-color:#ff0000;padding:10px;border-radius:5px'><strong>🔥 Peak Performer in Progress</strong><br>Keep the momentum going! Test Drive can help you optimize further.</div>", unsafe_allow_html=True)
     elif percent_score >= 60:
         st.markdown("<div style='background-color:#FCF8E3;padding:10px;border-radius:5px'><strong>⚠️ Your Engine Needs Tuning</strong><br>You're on the edge — Test Drive can help restore your drive, mood, and energy.</div>", unsafe_allow_html=True)
     else:
