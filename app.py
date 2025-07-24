@@ -32,7 +32,7 @@ if st.button("🚦 Calculate My Score"):
     total_score = energy + (10 - focus) + motivation + confidence + recovery + mood + appearance
     percent_score = int((total_score / 70) * 100)
 
-    st.markdown(f"## 🧠 Your Performance Score: <span style='color:black; font-weight:bold;'>{percent_score}/100</span>", unsafe_allow_html=True)
+    st.markdown(f"## 💪 Your Performance Score: <span style='color:black; font-weight:bold;'>{percent_score}/100</span>", unsafe_allow_html=True)
 
     if percent_score >= 80:
         st.markdown("<div style='background-color:#ff0000;padding:10px;border-radius:5px'><strong>🔥 Peak Performer in Progress</strong><br>Keep the momentum going! Test Drive can help you optimize further.</div>", unsafe_allow_html=True)
