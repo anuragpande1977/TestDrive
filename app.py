@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Page setup
 st.set_page_config(page_title="Test Drive Performance Check", layout="centered")
@@ -63,21 +64,22 @@ if st.button("🚦 Calculate My Score"):
     else:
         record.to_csv("testdrive_data.csv", index=False)
 
-    # Show graph of score distribution for the same age group
-    if os.path.exists("testdrive_data.csv"):
-        data = pd.read_csv("testdrive_data.csv")
-        age_range = data[(data["Age"] >= age - 2) & (data["Age"] <= age + 2)]
-        if not age_range.empty:
-            st.markdown("### 📊 Performance Score Distribution in Your Age Group")
-            fig, ax = plt.subplots()
-            ax.hist(age_range["Score"], bins=[0, 40, 60, 80, 100], color="#4C72B0", edgecolor="white")
-            ax.set_title(f"Age Group: {age - 2} to {age + 2}")
-            ax.set_xlabel("Performance Score")
-            ax.set_ylabel("Number of Men")
-            st.pyplot(fig)
+    # Show simulated testosterone levels vs. performance score graph
+    st.markdown("### 📉 Estimated Testosterone Level vs. Test Drive Score")
+    fig, ax = plt.subplots()
+    scores = np.linspace(0, 100, 100)
+    testosterone_levels = 200 + (scores * 3)  # mock linear scale: 200 ng/dL to 500 ng/dL
+    ax.plot(scores, testosterone_levels, label="Estimated Testosterone Level", color="#FF5733")
+    ax.axvline(percent_score, color='blue', linestyle='--', label=f"Your Score: {percent_score}")
+    ax.set_xlabel("Performance Score")
+    ax.set_ylabel("Estimated Testosterone (ng/dL)")
+    ax.set_title("How Your Score May Relate to Testosterone Levels")
+    ax.legend()
+    st.pyplot(fig)
 
     # Show informational video
     st.markdown("### 🎥 Learn More")
     st.video("https://www.youtube.com/watch?v=YOUR_VIDEO_ID")  # Replace with actual video URL
 
     st.success("📝 Your response has been processed. You can email us directly for follow-up.")
+
