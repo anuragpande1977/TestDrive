@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import os
 from datetime import datetime
 
 # Page setup
@@ -38,33 +37,24 @@ if st.button("🚦 Calculate My Score"):
     else:
         st.markdown("<div style='background-color:#F2DEDE;padding:10px;border-radius:5px'><strong>🛑 Time to Reignite Your Drive</strong><br>You're not alone — many men feel this way. Test Drive is scientifically designed to help you reboot.</div>", unsafe_allow_html=True)
 
-    st.markdown("### ✅ About Test Drive")
+    st.markdown("<div style='background-color:#E8F4FD;padding:15px;border-radius:8px;margin-top:20px;'>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color:#005A9C;'>✅ About Test Drive</h3>", unsafe_allow_html=True)
     st.markdown("""
-- Formulated for men 40+ dealing with declining energy and drive  
-- Supports testosterone balance, mood, and vitality  
-- Backed by clinical science  
-- All Natural
-""")
+<ul style='font-weight:bold;'>
+  <li>Formulated for men 40+ dealing with declining energy and drive</li>
+  <li>Supports testosterone balance, mood, and vitality</li>
+  <li>Backed by clinical science</li>
+  <li>All Natural</li>
+</ul>
+""", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("📩 _Ask us how to get started with Test Drive today._")
+    st.markdown("📩 _Send us your message directly._")
+    st.markdown(f"[Click here to email us](mailto:a.pande@valensa.com?subject=Test%20Drive%20Performance%20Score%20{percent_score}&body=Name:%20{name}%0AEmail:%20{email}%0AMessage:%20{message})")
 
     # Show informational video
     st.markdown("### 🎥 Learn More")
-    st.video("https://youtu.be/RmMn4yckQ2Q")  # Replace with actual video URL
+    st.video("https://www.youtube.com/watch?v=YOUR_VIDEO_ID")  # Replace with actual video URL
 
-    # Save data locally
-    record = {
-        "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "Name": name,
-        "Email": email,
-        "Message": message,
-        "Score": percent_score
-    }
+    st.success("📝 Your response has been processed. You can email us directly for follow-up.")
 
-    df = pd.DataFrame([record])
-    if not os.path.exists("visitor_data.csv"):
-        df.to_csv("visitor_data.csv", index=False)
-    else:
-        df.to_csv("visitor_data.csv", mode='a', index=False, header=False)
-
-    st.success("📝 Your response has been recorded. We'll reach out if you left a message.")
