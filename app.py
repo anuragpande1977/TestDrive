@@ -81,7 +81,7 @@ if st.button("🚦 Calculate My Score"):
 
     # Show informational video
     st.markdown("### 🎥 Learn More")
-    st.video("https://www.youtube.com/watch?v=YOUR_VIDEO_ID")  # Replace with actual video URL
+    st.video("https://youtu.be/RmMn4yckQ2Q")  # Replace with actual video URL
 
     st.success("📝 Your response has been processed. You can email us directly for follow-up.")
 
