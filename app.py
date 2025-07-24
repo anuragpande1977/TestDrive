@@ -64,18 +64,27 @@ if st.button("🚦 Calculate My Score"):
     else:
         record.to_csv("testdrive_data.csv", index=False)
 
-    # Show testosterone levels vs performance score graph
-    st.markdown("### 📉 Estimated Testosterone Level vs. Test Drive Score")
-    fig, ax = plt.subplots()
-    scores = np.linspace(0, 100, 100)
-    testosterone_levels = 600 - (100 - scores) * 3  # assume testosterone declines as score drops
-    ax.plot(scores, testosterone_levels, label="Estimated Testosterone Level", color="#FF5733")
-    ax.scatter(percent_score, 600 - (100 - percent_score) * 3, color='blue', s=100, zorder=5, label="Your Score")
-    ax.set_xlabel("Performance Score")
-    ax.set_ylabel("Estimated Testosterone (ng/dL)")
-    ax.set_title("How Your Score May Relate to Testosterone Levels")
-    ax.legend()
-    st.pyplot(fig)
+    # Bar chart for age group score distribution
+    st.markdown("### 📊 How Your Score Compares to Others in Your Age Group")
+    if os.path.exists("testdrive_data.csv"):
+        data = pd.read_csv("testdrive_data.csv")
+        age_group = data[(data["Age"] >= age - 2) & (data["Age"] <= age + 2)]
+
+        if not age_group.empty:
+            # Bin scores into ranges
+            bins = [0, 40, 60, 80, 100]
+            labels = ["0-40", "41-60", "61-80", "81-100"]
+            age_group["ScoreRange"] = pd.cut(age_group["Score"], bins=bins, labels=labels, include_lowest=True)
+            distribution = age_group["ScoreRange"].value_counts(normalize=True).sort_index() * 100
+
+            fig, ax = plt.subplots()
+            ax.bar(distribution.index, distribution.values, color="#4C72B0")
+            ax.set_ylabel("% of Men in Age Group")
+            ax.set_xlabel("Score Range")
+            ax.set_title(f"Performance Score Distribution (Age {age - 2} to {age + 2})")
+            st.pyplot(fig)
+        else:
+            st.info("Not enough data for your age group yet. Be the first to contribute!")
 
     # Show informational video
     st.markdown("### 🎥 Learn More")
