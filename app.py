@@ -56,35 +56,28 @@ if st.button("🚦 Calculate My Score"):
     st.markdown("📩 _Send us your message directly._")
     st.markdown(f"[Click here to email us](mailto:a.pande@valensa.com?subject=Test%20Drive%20Performance%20Score%20{percent_score}&body=Name:%20{name}%0AEmail:%20{email})")
 
-    # Save submission
-    record = pd.DataFrame([[datetime.now(), name, email, age, percent_score]],
-                          columns=["Timestamp", "Name", "Email", "Age", "Score"])
-    if os.path.exists("testdrive_data.csv"):
-        record.to_csv("testdrive_data.csv", mode='a', header=False, index=False)
-    else:
-        record.to_csv("testdrive_data.csv", index=False)
+    # Mock distribution data by age group
+    mock_distribution = {
+        (45, 50): {"0-40": 25, "41-60": 50, "61-80": 15, "81-100": 10},
+        (51, 55): {"0-40": 30, "41-60": 45, "61-80": 20, "81-100": 5},
+        (56, 60): {"0-40": 35, "41-60": 40, "61-80": 20, "81-100": 5},
+        (61, 65): {"0-40": 40, "41-60": 40, "61-80": 15, "81-100": 5},
+    }
 
-    # Bar chart for age group score distribution
+    def get_mock_distribution(age):
+        for (start, end), dist in mock_distribution.items():
+            if start <= age <= end:
+                return dist
+        return {"0-40": 20, "41-60": 50, "61-80": 20, "81-100": 10}  # default fallback
+
     st.markdown("### 📊 How Your Score Compares to Others in Your Age Group")
-    if os.path.exists("testdrive_data.csv"):
-        data = pd.read_csv("testdrive_data.csv")
-        age_group = data[(data["Age"] >= age - 2) & (data["Age"] <= age + 2)]
-
-        if not age_group.empty:
-            # Bin scores into ranges
-            bins = [0, 40, 60, 80, 100]
-            labels = ["0-40", "41-60", "61-80", "81-100"]
-            age_group["ScoreRange"] = pd.cut(age_group["Score"], bins=bins, labels=labels, include_lowest=True)
-            distribution = age_group["ScoreRange"].value_counts(normalize=True).sort_index() * 100
-
-            fig, ax = plt.subplots()
-            ax.bar(distribution.index, distribution.values, color="#4C72B0")
-            ax.set_ylabel("% of Men in Age Group")
-            ax.set_xlabel("Score Range")
-            ax.set_title(f"Performance Score Distribution (Age {age - 2} to {age + 2})")
-            st.pyplot(fig)
-        else:
-            st.info("Not enough data for your age group yet. Be the first to contribute!")
+    dist = get_mock_distribution(age)
+    fig, ax = plt.subplots()
+    ax.bar(dist.keys(), dist.values(), color="#4C72B0")
+    ax.set_ylabel("% of Men in Age Group")
+    ax.set_xlabel("Score Range")
+    ax.set_title(f"Mock Performance Score Distribution (Age {age})")
+    st.pyplot(fig)
 
     # Show informational video
     st.markdown("### 🎥 Learn More")
