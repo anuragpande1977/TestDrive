@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import os
+import matplotlib.pyplot as plt
 
 # Page setup
 st.set_page_config(page_title="Test Drive Performance Check", layout="centered")
@@ -8,6 +10,9 @@ st.title("🚗 Test Drive Performance Check")
 st.subheader("Rediscover your energy, confidence, and vitality in under 2 minutes.")
 
 st.markdown("Answer a few quick questions and get your **Performance Score** to see how Test Drive can help reignite your drive.")
+
+# Age input
+age = st.number_input("📅 Enter your age:", min_value=18, max_value=100, value=45)
 
 # Questions
 energy = st.slider("💥 How would you rate your daily energy levels?", 0, 10, 5)
@@ -18,11 +23,9 @@ recovery = st.slider("🔁 How quickly do you recover from exercise or stress?",
 mood = st.slider("🙂 How stable is your mood throughout the week?", 0, 10, 5)
 appearance = st.slider("💪 How satisfied are you with your body composition (muscle/fat)?", 0, 10, 5)
 
-# Optional user message input
-st.markdown("### 💬 Leave a Message (Optional)")
+# Name and email inputs
 name = st.text_input("Your Name")
 email = st.text_input("Your Email")
-message = st.text_area("Your Message or Concern")
 
 if st.button("🚦 Calculate My Score"):
     total_score = energy + (10 - focus) + motivation + confidence + recovery + mood + appearance
@@ -50,11 +53,31 @@ if st.button("🚦 Calculate My Score"):
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("📩 _Send us your message directly._")
-    st.markdown(f"[Click here to email us](mailto:a.pande@valensa.com?subject=Test%20Drive%20Performance%20Score%20{percent_score}&body=Name:%20{name}%0AEmail:%20{email}%0AMessage:%20{message})")
+    st.markdown(f"[Click here to email us](mailto:a.pande@valensa.com?subject=Test%20Drive%20Performance%20Score%20{percent_score}&body=Name:%20{name}%0AEmail:%20{email})")
+
+    # Save submission
+    record = pd.DataFrame([[datetime.now(), name, email, age, percent_score]],
+                          columns=["Timestamp", "Name", "Email", "Age", "Score"])
+    if os.path.exists("testdrive_data.csv"):
+        record.to_csv("testdrive_data.csv", mode='a', header=False, index=False)
+    else:
+        record.to_csv("testdrive_data.csv", index=False)
+
+    # Show graph of score distribution for the same age group
+    if os.path.exists("testdrive_data.csv"):
+        data = pd.read_csv("testdrive_data.csv")
+        age_range = data[(data["Age"] >= age - 2) & (data["Age"] <= age + 2)]
+        if not age_range.empty:
+            st.markdown("### 📊 Performance Score Distribution in Your Age Group")
+            fig, ax = plt.subplots()
+            ax.hist(age_range["Score"], bins=[0, 40, 60, 80, 100], color="#4C72B0", edgecolor="white")
+            ax.set_title(f"Age Group: {age - 2} to {age + 2}")
+            ax.set_xlabel("Performance Score")
+            ax.set_ylabel("Number of Men")
+            st.pyplot(fig)
 
     # Show informational video
     st.markdown("### 🎥 Learn More")
     st.video("https://www.youtube.com/watch?v=YOUR_VIDEO_ID")  # Replace with actual video URL
 
     st.success("📝 Your response has been processed. You can email us directly for follow-up.")
-
