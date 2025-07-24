@@ -64,13 +64,13 @@ if st.button("🚦 Calculate My Score"):
     else:
         record.to_csv("testdrive_data.csv", index=False)
 
-    # Show simulated testosterone levels vs. performance score graph
+    # Show testosterone levels vs performance score graph
     st.markdown("### 📉 Estimated Testosterone Level vs. Test Drive Score")
     fig, ax = plt.subplots()
     scores = np.linspace(0, 100, 100)
-    testosterone_levels = 200 + (scores * 3)  # mock linear scale: 200 ng/dL to 500 ng/dL
+    testosterone_levels = 600 - (100 - scores) * 3  # assume testosterone declines as score drops
     ax.plot(scores, testosterone_levels, label="Estimated Testosterone Level", color="#FF5733")
-    ax.axvline(percent_score, color='blue', linestyle='--', label=f"Your Score: {percent_score}")
+    ax.scatter(percent_score, 600 - (100 - percent_score) * 3, color='blue', s=100, zorder=5, label="Your Score")
     ax.set_xlabel("Performance Score")
     ax.set_ylabel("Estimated Testosterone (ng/dL)")
     ax.set_title("How Your Score May Relate to Testosterone Levels")
