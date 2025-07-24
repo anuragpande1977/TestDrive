@@ -34,7 +34,7 @@ if st.button("🚦 Calculate My Score"):
 - Formulated for men 40+ dealing with declining energy and drive  
 - Supports testosterone balance, mood, and vitality  
 - Backed by clinical science  
-- Includes powerful botanicals like Saw Palmetto and Astaxanthin
+- All Natural
 """)
 
     st.markdown("📩 _Ask us how to get started with Test Drive today._")
