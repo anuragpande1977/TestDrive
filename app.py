@@ -130,7 +130,7 @@ if st.button("🚦 Check My Status"):
     answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
 
     form_url = "https://docs.google.com/forms/d/e/1FAIpQLScXUpx545fygIemIvYadB52xupMxCKWD4gA6vY835Uxq1E8Nw/formResponse"
-
+    answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
     payload = {
         "entry.1977894388": name,
         "entry.2104446332": email,
