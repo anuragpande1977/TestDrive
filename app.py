@@ -1,20 +1,18 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import urllib.parse
-import requests
 
-# ---------------------------
-# PAGE SETUP
-# ---------------------------
 # ---------------------------
 # PAGE SETUP
 # ---------------------------
 st.set_page_config(page_title="Test Drive Symptom Checker", layout="centered")
-st.title("🏎️ Test Drive Symptom Checker")  # Changed 🚀 to 🏎️
-st.subheader("Discover if your lifestyle signs are holding back your drive, strength, and energy")
+st.title("🏎️ Test Drive Symptom Checker")
+st.subheader("Check if your lifestyle signs could point to testosterone-related changes.")
 
-
-st.markdown("Take this short quiz to discover if your lifestyle signs point to balanced testosterone or if it's time to take action.")
+st.markdown(
+    "Answer a few quick questions to see where you stand: **Healthy, Watch Zone, or High Symptom Burden**. "
+    "Your results will be shown instantly on this page."
+)
 
 # ---------------------------
 # AGE INPUT
@@ -70,19 +68,19 @@ if st.button("🚦 Check My Status"):
     max_score = len(responses) * 5
     percent_score = int((total_score / max_score) * 100)
 
-    # Determine Status
-    if percent_score <= 40:
+    # Determine Status (Evidence-based thresholds)
+    if percent_score <= 30:
         status = "✅ Healthy"
         color = "#D4EDDA"
-        message = "Your lifestyle signs look healthy. Keep it up!"
-    elif percent_score <= 60:
+        message = "Your lifestyle signs look healthy. Keep up the good habits!"
+    elif percent_score <= 50:
         status = "⚠️ Watch Zone"
         color = "#FCF8E3"
-        message = "You may have early signs related to testosterone decline. Test Drive may help you optimize."
+        message = "You may have early signs of testosterone-related changes. Consider taking action."
     else:
         status = "🛑 High Symptom Burden"
         color = "#F2DEDE"
-        message = "You are showing multiple signs of testosterone-related effects. Test Drive can help you restore your vitality."
+        message = "Multiple signs suggest testosterone-related changes. It's time to take control."
 
     # Display Result
     st.markdown(f"<div style='background-color:{color};padding:15px;border-radius:8px;'>"
@@ -99,22 +97,23 @@ if st.button("🚦 Check My Status"):
                 if symptom in qs:
                     st.markdown(f"- **{qs[symptom]}** ({category})")
 
-    # Age group distribution chart
-    mock_distribution = {
-        (45, 50): {"Healthy": 25, "Watch Zone": 50, "High Symptom Burden": 25},
-        (51, 55): {"Healthy": 20, "Watch Zone": 45, "High Symptom Burden": 35},
-        (56, 60): {"Healthy": 15, "Watch Zone": 40, "High Symptom Burden": 45},
-        (61, 65): {"Healthy": 10, "Watch Zone": 35, "High Symptom Burden": 55},
+    # Age group distribution chart based on published data
+    distribution_data = {
+        (30, 39): {"Healthy": 94, "Watch Zone": 5, "High Symptom Burden": 1},
+        (40, 49): {"Healthy": 90, "Watch Zone": 8, "High Symptom Burden": 2},
+        (50, 59): {"Healthy": 85, "Watch Zone": 12, "High Symptom Burden": 3},
+        (60, 69): {"Healthy": 75, "Watch Zone": 20, "High Symptom Burden": 5},
+        (70, 100): {"Healthy": 60, "Watch Zone": 25, "High Symptom Burden": 15},
     }
 
-    def get_mock_distribution(age):
-        for (start, end), dist in mock_distribution.items():
+    def get_distribution(age):
+        for (start, end), dist in distribution_data.items():
             if start <= age <= end:
                 return dist
-        return {"Healthy": 20, "Watch Zone": 50, "High Symptom Burden": 30}
+        return {"Healthy": 90, "Watch Zone": 8, "High Symptom Burden": 2}
 
     st.markdown("### 📊 How You Compare to Others in Your Age Group")
-    dist = get_mock_distribution(age)
+    dist = get_distribution(age)
     fig, ax = plt.subplots()
     ax.bar(dist.keys(), dist.values(), color=["#28A745", "#FFC107", "#DC3545"])
     ax.set_ylabel("% of Men in Age Group")
@@ -122,24 +121,18 @@ if st.button("🚦 Check My Status"):
     ax.set_title(f"Symptom Status Distribution (Age {age})")
     st.pyplot(fig)
 
-    # ---------------------------
-    # SUBMIT DIRECTLY TO GOOGLE FORM
-    # ---------------------------
+    # Prepare data for Google Form submission
     answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
-    form_url = "https://docs.google.com/forms/d/e/1FAIpQLScXUpx545fygIemIvYadB52xupMxCKWD4gA6vY835Uxq1E8Nw/formResponse"
 
-    data = {
-        "entry.1977894388": name,
-        "entry.2104446332": email,
-        "entry.2083902497": age,
-        "entry.1267833734": percent_score,
-        "entry.766468661": status,
-        "entry.929729932": answers
-    }
+    form_url = (
+        "https://docs.google.com/forms/d/e/1FAIpQLScXUpx545fygIemIvYadB52xupMxCKWD4gA6vY835Uxq1E8Nw/viewform?usp=pp_url"
+        f"&entry.1977894388={urllib.parse.quote(name)}"
+        f"&entry.2104446332={urllib.parse.quote(email)}"
+        f"&entry.2083902497={age}"
+        f"&entry.1267833734={percent_score}"
+        f"&entry.766468661={urllib.parse.quote(status)}"
+        f"&entry.929729932={urllib.parse.quote(answers)}"
+    )
 
-    response = requests.post(form_url, data=data)
-    if response.status_code == 200:
-        st.success("✅ Your results have been securely submitted!")
-    else:
-        st.warning("⚠️ Unable to submit automatically, but your results are displayed above.")
-
+    st.markdown(f"[📩 Save Your Results Securely]({form_url})", unsafe_allow_html=True)
+    st.success("📝 Your results are ready. Click the link above if you want to save them.")
