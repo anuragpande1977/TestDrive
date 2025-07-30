@@ -127,9 +127,9 @@ if st.button("🚦 Check My Status"):
     st.markdown("<h3 style='color:#005A9C;'>✅ About Test Drive</h3>", unsafe_allow_html=True)
     st.markdown("""
     <ul style='font-weight:bold;'>
-      <li>Formulated for men 40+ dealing with declining energy and drive</li>
+      <li>Formulated for men 40+ dealing with normal age-based declining energy and drive</li>
       <li>Supports testosterone balance, mood, and vitality</li>
-      <li>Backed by clinical science</li>
+      <li>Proven by clinical science</li>
       <li>All Natural</li>
     </ul>
     """, unsafe_allow_html=True)
