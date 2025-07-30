@@ -6,9 +6,13 @@ import requests
 # ---------------------------
 # PAGE SETUP
 # ---------------------------
+# ---------------------------
+# PAGE SETUP
+# ---------------------------
 st.set_page_config(page_title="Test Drive Symptom Checker", layout="centered")
-st.title("🚀 Test Drive Symptom Checker")
+st.title("🏎️ Test Drive Symptom Checker")  # Changed 🚀 to 🏎️
 st.subheader("Find out if your lifestyle signs suggest testosterone-related changes.")
+
 
 st.markdown("Answer a few quick questions. We'll give you a simple **status** (Healthy, Watch Zone, or High Symptom Burden) and store your results securely.")
 
