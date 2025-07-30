@@ -117,7 +117,7 @@ if st.button("🚦 Check My Status"):
     ax.set_title(f"Symptom Status Distribution (Age {age})")
     st.pyplot(fig)
 
-   import urllib.parse
+
 
 # Prepare data for Google Form submission
 answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
