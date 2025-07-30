@@ -1,6 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import urllib.parse
+import requests
 
 # ---------------------------
 # PAGE SETUP
@@ -117,19 +118,24 @@ if st.button("🚦 Check My Status"):
     ax.set_title(f"Symptom Status Distribution (Age {age})")
     st.pyplot(fig)
 
+    # ---------------------------
+    # SUBMIT DIRECTLY TO GOOGLE FORM
+    # ---------------------------
+    answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
+    form_url = "https://docs.google.com/forms/d/e/1FAIpQLScXUpx545fygIemIvYadB52xupMxCKWD4gA6vY835Uxq1E8Nw/formResponse"
 
+    data = {
+        "entry.1977894388": name,
+        "entry.2104446332": email,
+        "entry.2083902497": age,
+        "entry.1267833734": percent_score,
+        "entry.766468661": status,
+        "entry.929729932": answers
+    }
 
-# Prepare data for Google Form submission
-answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
+    response = requests.post(form_url, data=data)
+    if response.status_code == 200:
+        st.success("✅ Your results have been securely submitted!")
+    else:
+        st.warning("⚠️ Unable to submit automatically, but your results are displayed above.")
 
-form_url = (
-    "https://docs.google.com/forms/d/e/1FAIpQLScXUpx545fygIemIvYadB52xupMxCKWD4gA6vY835Uxq1E8Nw/viewform?usp=pp_url"
-    f"&entry.1977894388={urllib.parse.quote(name)}"       # Name
-    f"&entry.2104446332={urllib.parse.quote(email)}"      # Email
-    f"&entry.2083902497={age}"                            # Age
-    f"&entry.1267833734={percent_score}"                  # Score
-    f"&entry.766468661={urllib.parse.quote(status)}"      # Status
-    f"&entry.929729932={urllib.parse.quote(answers)}"     # All answers
-)
-st.markdown(f"[📩 Submit Your Results Securely]({form_url})", unsafe_allow_html=True)
-st.success("📝 Your results are ready. Click the link above to save them to our system.")
