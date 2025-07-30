@@ -130,10 +130,7 @@ form_url = (
     f"&entry.444444={percent_score}"                 # Score
     f"&entry.555555={urllib.parse.quote(status)}"    # Status
     f"&entry.666666={urllib.parse.quote(answers)}"   # All answers
-    )
+)
 
-    st.markdown(f"[📩 Submit Your Results Securely]({form_url})", unsafe_allow_html=True)
-
-    st.success("📝 Your results are ready. Click the link above to save them to our system.")
-
-
+st.markdown(f"[📩 Submit Your Results Securely]({form_url})", unsafe_allow_html=True)
+st.success("📝 Your results are ready. Click the link above to save them to our system.")
