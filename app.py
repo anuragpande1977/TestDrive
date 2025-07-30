@@ -117,18 +117,20 @@ if st.button("🚦 Check My Status"):
     ax.set_title(f"Symptom Status Distribution (Age {age})")
     st.pyplot(fig)
 
-    # Prepare data for Google Form submission
-    answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
-    form_url = (
-        "https://docs.google.com/forms/d/e/1FAIpQLScXUpx545fygIemIvYadB52xupMxCKWD4gA6vY835Uxq1E8Nw/viewform?usp=pp_url&entry.1977894388=anurag&entry.2104446332=a.pande@valensa.com&entry.2083902497=45&entry.1267833734=45&entry.766468661=454&entry.929729932=34324234242"
-        "usp=pp_url"
-        f"&entry.111111={urllib.parse.quote(name)}"
-        f"&entry.222222={urllib.parse.quote(email)}"
-        f"&entry.333333={age}"
-        f"&entry.444444={percent_score}"
-        f"&entry.555555={urllib.parse.quote(status)}"
-        f"&entry.666666={urllib.parse.quote(answers)}"
-    )
+   import urllib.parse
+
+# Prepare data for Google Form submission
+answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
+
+form_url = (
+    "https://docs.google.com/forms/d/e/1FAIpQLScXUpx545fygIemIvYadB52xupMxCKWD4gA6vY835Uxq1E8Nw/viewform?usp=pp_url"
+    f"&entry.111111={urllib.parse.quote(name)}"      # Name
+    f"&entry.222222={urllib.parse.quote(email)}"     # Email
+    f"&entry.333333={age}"                           # Age
+    f"&entry.444444={percent_score}"                 # Score
+    f"&entry.555555={urllib.parse.quote(status)}"    # Status
+    f"&entry.666666={urllib.parse.quote(answers)}"   # All answers
+)
 
     st.markdown(f"[📩 Submit Your Results Securely]({form_url})", unsafe_allow_html=True)
 
