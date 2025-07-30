@@ -7,7 +7,7 @@ import requests  # <-- NEW: to submit to Google Form
 # PAGE SETUP
 # ---------------------------
 st.set_page_config(page_title="Test Drive Symptom Checker", layout="centered")
-st.title("🏎️ Test Drive Symptom Checker")
+st.title("🏎️ Test Drive Questionnaire")
 st.subheader("Are your lifestyle signs shifting your testosterone balance?")
 
 st.markdown(
@@ -141,4 +141,4 @@ if st.button("🚦 Check My Status"):
     }
 
     requests.post(form_url, data=payload)  # SUBMIT silently
-    st.success("✅ Your results have been analyzed and securely saved.")
+    st.success("✅ Thank you for using the TestDrive Questionnaire.")
