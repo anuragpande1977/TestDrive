@@ -124,13 +124,12 @@ answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
 
 form_url = (
     "https://docs.google.com/forms/d/e/1FAIpQLScXUpx545fygIemIvYadB52xupMxCKWD4gA6vY835Uxq1E8Nw/viewform?usp=pp_url"
-    f"&entry.111111={urllib.parse.quote(name)}"      # Name
-    f"&entry.222222={urllib.parse.quote(email)}"     # Email
-    f"&entry.333333={age}"                           # Age
-    f"&entry.444444={percent_score}"                 # Score
-    f"&entry.555555={urllib.parse.quote(status)}"    # Status
-    f"&entry.666666={urllib.parse.quote(answers)}"   # All answers
+    f"&entry.1977894388={urllib.parse.quote(name)}"       # Name
+    f"&entry.2104446332={urllib.parse.quote(email)}"      # Email
+    f"&entry.2083902497={age}"                            # Age
+    f"&entry.1267833734={percent_score}"                  # Score
+    f"&entry.766468661={urllib.parse.quote(status)}"      # Status
+    f"&entry.929729932={urllib.parse.quote(answers)}"     # All answers
 )
-
 st.markdown(f"[📩 Submit Your Results Securely]({form_url})", unsafe_allow_html=True)
 st.success("📝 Your results are ready. Click the link above to save them to our system.")
