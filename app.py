@@ -11,10 +11,10 @@ import requests
 # ---------------------------
 st.set_page_config(page_title="Test Drive Symptom Checker", layout="centered")
 st.title("🏎️ Test Drive Symptom Checker")  # Changed 🚀 to 🏎️
-st.subheader("Find out if your lifestyle signs suggest testosterone-related changes.")
+st.subheader("Discover if your lifestyle signs are holding back your drive, strength, and energy")
 
 
-st.markdown("Answer a few quick questions. We'll give you a simple **status** (Healthy, Watch Zone, or High Symptom Burden) and store your results securely.")
+st.markdown("Take this short quiz to discover if your lifestyle signs point to balanced testosterone or if it's time to take action.")
 
 # ---------------------------
 # AGE INPUT
