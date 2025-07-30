@@ -1,5 +1,6 @@
 import streamlit as st
 import matplotlib.pyplot as plt
+import urllib.parse
 
 # ---------------------------
 # PAGE SETUP
@@ -8,7 +9,7 @@ st.set_page_config(page_title="Test Drive Symptom Checker", layout="centered")
 st.title("🚀 Test Drive Symptom Checker")
 st.subheader("Find out if your lifestyle signs suggest testosterone-related changes.")
 
-st.markdown("Answer a few quick questions. We'll give you a simple **status** (Healthy, Watch Zone, or High Symptom Burden) and show you where you can improve.")
+st.markdown("Answer a few quick questions. We'll give you a simple **status** (Healthy, Watch Zone, or High Symptom Burden) and store your results securely.")
 
 # ---------------------------
 # AGE INPUT
@@ -84,9 +85,7 @@ if st.button("🚦 Check My Status"):
                 f"<p>{message}</p>"
                 "</div>", unsafe_allow_html=True)
 
-    # ---------------------------
-    # FLAGGED SYMPTOMS
-    # ---------------------------
+    # Flagged Symptoms
     flagged_symptoms = [q for q, resp in responses.items() if scores_map[resp] >= 4]
     if flagged_symptoms:
         st.markdown("### 🚩 Key Areas to Improve")
@@ -95,9 +94,7 @@ if st.button("🚦 Check My Status"):
                 if symptom in qs:
                     st.markdown(f"- **{qs[symptom]}** ({category})")
 
-    # ---------------------------
-    # AGE GROUP DISTRIBUTION CHART
-    # ---------------------------
+    # Age group distribution chart
     mock_distribution = {
         (45, 50): {"Healthy": 25, "Watch Zone": 50, "High Symptom Burden": 25},
         (51, 55): {"Healthy": 20, "Watch Zone": 45, "High Symptom Burden": 35},
@@ -120,33 +117,21 @@ if st.button("🚦 Check My Status"):
     ax.set_title(f"Symptom Status Distribution (Age {age})")
     st.pyplot(fig)
 
-    # ---------------------------
-    # ABOUT TEST DRIVE
-    # ---------------------------
-    st.markdown("<div style='background-color:#E8F4FD;padding:15px;border-radius:8px;margin-top:20px;'>", unsafe_allow_html=True)
-    st.markdown("<h3 style='color:#005A9C;'>✅ About Test Drive</h3>", unsafe_allow_html=True)
-    st.markdown("""
-    <ul style='font-weight:bold;'>
-      <li>Formulated for men 40+ dealing with normal age-based declining energy and drive</li>
-      <li>Supports testosterone balance, mood, and vitality</li>
-      <li>Proven by clinical science</li>
-      <li>All Natural</li>
-    </ul>
-    """, unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    # Prepare data for Google Form submission
+    answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
+    form_url = (
+        "https://docs.google.com/forms/d/e/1FAIpQLScXUpx545fygIemIvYadB52xupMxCKWD4gA6vY835Uxq1E8Nw/viewform?usp=pp_url&entry.1977894388=anurag&entry.2104446332=a.pande@valensa.com&entry.2083902497=45&entry.1267833734=45&entry.766468661=454&entry.929729932=34324234242"
+        "usp=pp_url"
+        f"&entry.111111={urllib.parse.quote(name)}"
+        f"&entry.222222={urllib.parse.quote(email)}"
+        f"&entry.333333={age}"
+        f"&entry.444444={percent_score}"
+        f"&entry.555555={urllib.parse.quote(status)}"
+        f"&entry.666666={urllib.parse.quote(answers)}"
+    )
 
-    # ---------------------------
-    # EMAIL LINK
-    # ---------------------------
-    st.markdown("📩 _Send us your message directly._")
-    st.markdown(f"[Click here to email us](mailto:a.pande@valensa.com?subject=Test%20Drive%20Symptom%20Status%20{status}&body=Name:%20{name}%0AEmail:%20{email})")
+    st.markdown(f"[📩 Submit Your Results Securely]({form_url})", unsafe_allow_html=True)
 
-    # ---------------------------
-    # INFORMATIONAL VIDEO
-    # ---------------------------
-    st.markdown("### 🎥 Learn More")
-    st.video("https://youtu.be/RmMn4yckQ2Q")  # Replace with actual video URL
-
-    st.success("📝 Your response has been processed. You can email us directly for follow-up.")
+    st.success("📝 Your results are ready. Click the link above to save them to our system.")
 
 
