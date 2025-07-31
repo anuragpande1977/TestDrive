@@ -22,7 +22,8 @@ st.markdown(
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
 client = gspread.authorize(creds)
-sheet = client.open("TestDrive Responses").sheet1
+sheet = client.open("Testosterone Index Form (Responses)").sheet1
+
 
 # ---------------------------
 # AGE INPUT
