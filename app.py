@@ -24,14 +24,21 @@ SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=SCOPES)
 client = gspread.authorize(creds)
 
-# DEBUG: List all spreadsheets to ensure access
-# Directly open the sheet (make sure service account email has edit access)
 try:
     sheet = client.open("Testosterone Index Form (Responses)").sheet1
 except Exception as e:
     st.error(f"Could not open the sheet. Check name or permissions. Error: {e}")
     st.stop()
 
+# ---------------------------
+# ENSURE HEADERS
+# ---------------------------
+expected_headers = ["Timestamp", "Name", "Email", "Age", "Score", "Status", "Answers"]
+existing_headers = sheet.row_values(1)
+
+if existing_headers != expected_headers:
+    sheet.clear()
+    sheet.append_row(expected_headers)
 
 # ---------------------------
 # AGE INPUT
@@ -124,7 +131,6 @@ if st.button("🚦 Check My Status"):
     # ---------------------------
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
-
     sheet.append_row([timestamp, name, email, age, percent_score, status, answers])
 
     # ---------------------------
