@@ -20,33 +20,15 @@ st.markdown(
 # ---------------------------
 # GOOGLE SHEET CONNECTION
 # ---------------------------
-SCOPES = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive"
-]
-
-creds = Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"],
-    scopes=SCOPES
-)
+SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=SCOPES)
 client = gspread.authorize(creds)
 
-
 try:
-    sheet = client.open("Testosterone Index Form (Responses)").sheet1
+    sheet = client.open("Testosterone Index Responses").sheet1  # new dedicated sheet
 except Exception as e:
     st.error(f"Could not open the sheet. Check name or permissions. Error: {e}")
     st.stop()
-
-# ---------------------------
-# ENSURE HEADERS
-# ---------------------------
-expected_headers = ["Timestamp", "Name", "Email", "Age", "Score", "Status", "Answers"]
-existing_headers = sheet.row_values(1)
-
-if existing_headers != expected_headers:
-    sheet.clear()
-    sheet.append_row(expected_headers)
 
 # ---------------------------
 # AGE INPUT
@@ -98,6 +80,10 @@ email = st.text_input("Your Email")
 # CALCULATE SCORE & SAVE
 # ---------------------------
 if st.button("🚦 Check My Status"):
+    if not name or not email:
+        st.error("Please enter both name and email.")
+        st.stop()
+
     total_score = sum([scores_map[resp] for resp in responses.values()])
     max_score = len(responses) * 5
     percent_score = int((total_score / max_score) * 100)
@@ -139,6 +125,7 @@ if st.button("🚦 Check My Status"):
     # ---------------------------
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
+
     sheet.append_row([timestamp, name, email, age, percent_score, status, answers])
 
     # ---------------------------
@@ -151,9 +138,11 @@ if st.button("🚦 Check My Status"):
         age_group = df[(df["Age"] >= age - 5) & (df["Age"] <= age + 5)]
         if not age_group.empty:
             counts = age_group["Status"].value_counts().to_dict()
-            dist = {"Healthy": counts.get("✅ Healthy", 0),
-                    "Watch Zone": counts.get("⚠️ Watch Zone", 0),
-                    "High Symptom Burden": counts.get("🛑 High Symptom Burden", 0)}
+            dist = {
+                "Healthy": counts.get("✅ Healthy", 0),
+                "Watch Zone": counts.get("⚠️ Watch Zone", 0),
+                "High Symptom Burden": counts.get("🛑 High Symptom Burden", 0)
+            }
 
             st.markdown("### 📊 How You Compare to Others in Your Age Group")
             fig, ax = plt.subplots()
