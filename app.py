@@ -139,6 +139,9 @@ if st.button("🚦 Check My Status"):
     # ---------------------------
 # COMPARISON FOR SAME USER (BEFORE vs AFTER)
 # ---------------------------
+# ---------------------------
+# COMPARISON FOR SAME USER (BEFORE vs AFTER)
+# ---------------------------
 data = sheet.get_all_records()
 df = pd.DataFrame(data)
 
@@ -146,14 +149,13 @@ if not df.empty and "Email" in df.columns and "Score" in df.columns:
     user_data = df[df["Email"] == email].sort_values("Timestamp")
 
     if len(user_data) > 1:
-        st.markdown("### 📈 Your Progress Over Time")
+        st.markdown("### 📊 Your Progress Over Time")
 
         fig, ax = plt.subplots()
-        ax.plot(user_data["Timestamp"], user_data["Score"], marker="o", linestyle="-", label="Your Score")
+        ax.bar(user_data["Timestamp"], user_data["Score"], color="#007BFF")
         ax.set_xlabel("Date")
-        ax.set_ylabel("Score (%)")
+        ax.set_ylabel("Symptom Score (%)")
         ax.set_title("Your Testosterone Index Progress")
-        ax.legend()
         plt.xticks(rotation=45)
         st.pyplot(fig)
 
@@ -161,12 +163,13 @@ if not df.empty and "Email" in df.columns and "Score" in df.columns:
         current_score = user_data["Score"].iloc[-1]
         change = current_score - last_score
 
-        if change > 0:
-            st.success(f"✅ Your score improved by {change}% since your last check!")
-        elif change < 0:
-            st.warning(f"⚠️ Your score dropped by {abs(change)}% since your last check.")
+        # Lower score is better
+        if change < 0:
+            st.success(f"✅ Your symptom score improved by {abs(change)}% since your last check!")
+        elif change > 0:
+            st.warning(f"⚠️ Your symptom score increased by {change}%. Consider lifestyle improvements.")
         else:
-            st.info("No change since your last check.")
+            st.info("ℹ️ No change since your last check.")
     else:
         st.info("No previous submissions found. Your progress will be tracked from now on.")
 else:
