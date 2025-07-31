@@ -4,6 +4,20 @@ import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 import pandas as pd
+st.set_page_config(
+    page_title="Herb's Forest App",
+    page_icon="🌿",
+    layout="wide"
+)
+
+# Hide Streamlit UI
+st.markdown("""
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+""", unsafe_allow_html=True)
 
 # ---------------------------
 # PAGE SETUP
