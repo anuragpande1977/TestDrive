@@ -2,16 +2,8 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import gspread
 from google.oauth2.service_account import Credentials
-import pandas as pd
 from datetime import datetime
-
-# ---------------------------
-# GOOGLE SHEETS AUTH
-# ---------------------------
-scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-credentials = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
-client = gspread.authorize(credentials)
-sheet = client.open("Testosterone Index Form (Responses)").sheet1  # Make sure this matches your sheet name
+import pandas as pd
 
 # ---------------------------
 # PAGE SETUP
@@ -24,6 +16,20 @@ st.markdown(
     "Answer a few simple questions and find out if you're in the **Healthy Zone**, "
     "**Watch Zone**, or showing a **High Symptom Burden**."
 )
+
+# ---------------------------
+# GOOGLE SHEET CONNECTION
+# ---------------------------
+SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=SCOPES)
+client = gspread.authorize(creds)
+
+# DEBUG: List all spreadsheets to ensure access
+available_sheets = [s.title for s in client.openall()]
+st.write("Available Sheets:", available_sheets)
+
+# Open your sheet
+sheet = client.open("Testosterone Index Form (Responses)").sheet1  # Must match exactly
 
 # ---------------------------
 # AGE INPUT
@@ -72,7 +78,7 @@ name = st.text_input("Your Name")
 email = st.text_input("Your Email")
 
 # ---------------------------
-# CALCULATE SCORE
+# CALCULATE SCORE & SAVE
 # ---------------------------
 if st.button("🚦 Check My Status"):
     total_score = sum([scores_map[resp] for resp in responses.values()])
@@ -102,38 +108,47 @@ if st.button("🚦 Check My Status"):
         unsafe_allow_html=True
     )
 
-    # Record Data in Google Sheets (with timestamp)
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
-    sheet.append_row([timestamp, name, email, age, percent_score, status, answers])
-
-    st.success("✅ Thank you for using the Test Drive Questionnaire.")
+    # Flagged Symptoms
+    flagged_symptoms = [q for q, resp in responses.items() if scores_map[resp] >= 4]
+    if flagged_symptoms:
+        st.markdown("### 🚩 Key Areas to Improve")
+        for symptom in flagged_symptoms:
+            for category, qs in questions.items():
+                if symptom in qs:
+                    st.markdown(f"- **{qs[symptom]}** ({category})")
 
     # ---------------------------
-    # REAL COMPARISON DATA
+    # APPEND TO GOOGLE SHEET
+    # ---------------------------
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
+
+    sheet.append_row([timestamp, name, email, age, percent_score, status, answers])
+
+    # ---------------------------
+    # COMPARATIVE DATA
     # ---------------------------
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
 
-    # Ensure correct column names
-    if not {"Age", "Status"}.issubset(df.columns):
-        st.error("Google Sheet does not have proper column headers (Age, Status). Please fix it.")
-    else:
-        # Filter for similar age group (±5 years)
-        age_filtered = df[(df["Age"] >= age - 5) & (df["Age"] <= age + 5)]
+    if not df.empty and "Score" in df.columns and "Age" in df.columns:
+        age_group = df[(df["Age"] >= age - 5) & (df["Age"] <= age + 5)]
+        if not age_group.empty:
+            counts = age_group["Status"].value_counts().to_dict()
+            dist = {"Healthy": counts.get("✅ Healthy", 0),
+                    "Watch Zone": counts.get("⚠️ Watch Zone", 0),
+                    "High Symptom Burden": counts.get("🛑 High Symptom Burden", 0)}
 
-        if len(age_filtered) > 0:
-            comparison = age_filtered["Status"].value_counts().reindex(
-                ["✅ Healthy", "⚠️ Watch Zone", "🛑 High Symptom Burden"], fill_value=0
-            )
-
-            # Chart
             st.markdown("### 📊 How You Compare to Others in Your Age Group")
             fig, ax = plt.subplots()
-            ax.bar(comparison.index, comparison.values, color=["#28A745", "#FFC107", "#DC3545"])
-            ax.set_ylabel("Number of Users")
+            ax.bar(dist.keys(), dist.values(), color=["#28A745", "#FFC107", "#DC3545"])
+            ax.set_ylabel("Number of Men in Age Group")
             ax.set_xlabel("Status")
-            ax.set_title(f"Symptom Status Distribution (Age {age}±5)")
+            ax.set_title(f"Symptom Status Distribution (Age {age})")
             st.pyplot(fig)
         else:
-            st.info("Not enough data yet to show a comparison for your age group.")
+            st.info("No comparative data yet for your age group.")
+    else:
+        st.info("No data available yet for comparison.")
+
+    st.success("✅ Your response has been saved successfully.")
