@@ -136,29 +136,38 @@ if st.button("🚦 Check My Status"):
     # ---------------------------
     # COMPARATIVE DATA
     # ---------------------------
-    data = sheet.get_all_records()
-    df = pd.DataFrame(data)
+    # ---------------------------
+# COMPARISON FOR SAME USER (BEFORE vs AFTER)
+# ---------------------------
+data = sheet.get_all_records()
+df = pd.DataFrame(data)
 
-    if not df.empty and "Score" in df.columns and "Age" in df.columns:
-        age_group = df[(df["Age"] >= age - 5) & (df["Age"] <= age + 5)]
-        if not age_group.empty:
-            counts = age_group["Status"].value_counts().to_dict()
-            dist = {
-                "Healthy": counts.get("✅ Healthy", 0),
-                "Watch Zone": counts.get("⚠️ Watch Zone", 0),
-                "High Symptom Burden": counts.get("🛑 High Symptom Burden", 0)
-            }
+if not df.empty and "Email" in df.columns and "Score" in df.columns:
+    user_data = df[df["Email"] == email].sort_values("Timestamp")
 
-            st.markdown("### 📊 How You Compare to Others in Your Age Group")
-            fig, ax = plt.subplots()
-            ax.bar(dist.keys(), dist.values(), color=["#28A745", "#FFC107", "#DC3545"])
-            ax.set_ylabel("Number of Men in Age Group")
-            ax.set_xlabel("Status")
-            ax.set_title(f"Symptom Status Distribution (Age {age})")
-            st.pyplot(fig)
+    if len(user_data) > 1:
+        st.markdown("### 📈 Your Progress Over Time")
+
+        fig, ax = plt.subplots()
+        ax.plot(user_data["Timestamp"], user_data["Score"], marker="o", linestyle="-", label="Your Score")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Score (%)")
+        ax.set_title("Your Testosterone Index Progress")
+        ax.legend()
+        plt.xticks(rotation=45)
+        st.pyplot(fig)
+
+        last_score = user_data["Score"].iloc[-2]
+        current_score = user_data["Score"].iloc[-1]
+        change = current_score - last_score
+
+        if change > 0:
+            st.success(f"✅ Your score improved by {change}% since your last check!")
+        elif change < 0:
+            st.warning(f"⚠️ Your score dropped by {abs(change)}% since your last check.")
         else:
-            st.info("No comparative data yet for your age group.")
+            st.info("No change since your last check.")
     else:
-        st.info("No data available yet for comparison.")
-
-    st.success("✅ Your response has been saved successfully.")
+        st.info("No previous submissions found. Your progress will be tracked from now on.")
+else:
+    st.info("No data available for progress tracking.")
