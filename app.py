@@ -25,11 +25,13 @@ creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"],
 client = gspread.authorize(creds)
 
 # DEBUG: List all spreadsheets to ensure access
-available_sheets = [s.title for s in client.openall()]
-st.write("Available Sheets:", available_sheets)
+# Directly open the sheet (make sure service account email has edit access)
+try:
+    sheet = client.open("Testosterone Index Form (Responses)").sheet1
+except Exception as e:
+    st.error(f"Could not open the sheet. Check name or permissions. Error: {e}")
+    st.stop()
 
-# Open your sheet
-sheet = client.open("Testosterone Index Form (Responses)").sheet1  # Must match exactly
 
 # ---------------------------
 # AGE INPUT
