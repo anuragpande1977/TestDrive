@@ -29,10 +29,11 @@ creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"],
 client = gspread.authorize(creds)
 
 try:
-    sheet = client.open("Testosterone Index Responses").sheet1  # new dedicated sheet
+    sheet = client.open("TestDriveSheet").sheet1  # <-- Your new sheet name
 except Exception as e:
     st.error(f"Could not open the sheet. Check name or permissions. Error: {e}")
     st.stop()
+
 
 # ---------------------------
 # AGE INPUT
