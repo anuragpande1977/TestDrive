@@ -2,21 +2,16 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import gspread
 from google.oauth2.service_account import Credentials
+import pandas as pd
 from datetime import datetime
 
 # ---------------------------
-# GOOGLE SHEETS CONNECTION
+# GOOGLE SHEETS AUTH
 # ---------------------------
-scope = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive"
-]
-
+scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 credentials = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
 client = gspread.authorize(credentials)
-
-# Open your sheet by name
-sheet = client.open("Testosterone Index Form (Responses)").sheet1
+sheet = client.open("Testosterone Index Form (Responses)").sheet1  # Make sure this matches your sheet name
 
 # ---------------------------
 # PAGE SETUP
@@ -36,7 +31,7 @@ st.markdown(
 age = st.number_input("📅 Enter your age:", min_value=18, max_value=100, value=45)
 
 # ---------------------------
-# QUESTIONNAIRE (Grouped)
+# QUESTIONNAIRE
 # ---------------------------
 questions = {
     "Energy & Vitality": {
@@ -107,44 +102,38 @@ if st.button("🚦 Check My Status"):
         unsafe_allow_html=True
     )
 
-    # Flagged Symptoms
-    flagged_symptoms = [q for q, resp in responses.items() if scores_map[resp] >= 4]
-    if flagged_symptoms:
-        st.markdown("### 🚩 Key Areas to Improve")
-        for symptom in flagged_symptoms:
-            for category, qs in questions.items():
-                if symptom in qs:
-                    st.markdown(f"- **{qs[symptom]}** ({category})")
-
-    # Age group distribution chart (mock data for now)
-    mock_distribution = {
-        (45, 50): {"Healthy": 25, "Watch Zone": 50, "High Symptom Burden": 25},
-        (51, 55): {"Healthy": 20, "Watch Zone": 45, "High Symptom Burden": 35},
-        (56, 60): {"Healthy": 15, "Watch Zone": 40, "High Symptom Burden": 45},
-        (61, 65): {"Healthy": 10, "Watch Zone": 35, "High Symptom Burden": 55},
-    }
-
-    def get_mock_distribution(age):
-        for (start, end), dist in mock_distribution.items():
-            if start <= age <= end:
-                return dist
-        return {"Healthy": 20, "Watch Zone": 50, "High Symptom Burden": 30}
-
-    st.markdown("### 📊 How You Compare to Others in Your Age Group")
-    dist = get_mock_distribution(age)
-    fig, ax = plt.subplots()
-    ax.bar(dist.keys(), dist.values(), color=["#28A745", "#FFC107", "#DC3545"])
-    ax.set_ylabel("% of Men in Age Group")
-    ax.set_xlabel("Status")
-    ax.set_title(f"Symptom Status Distribution (Age {age})")
-    st.pyplot(fig)
-
-    # ---------------------------
-    # APPEND DATA TO GOOGLE SHEET
-    # ---------------------------
+    # Record Data in Google Sheets (with timestamp)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     answers = ", ".join([f"{k}:{responses[k]}" for k in responses])
-
     sheet.append_row([timestamp, name, email, age, percent_score, status, answers])
 
-    st.success("✅ Your responses have been recorded successfully.")
+    st.success("✅ Thank you for using the Test Drive Questionnaire.")
+
+    # ---------------------------
+    # REAL COMPARISON DATA
+    # ---------------------------
+    data = sheet.get_all_records()
+    df = pd.DataFrame(data)
+
+    # Ensure correct column names
+    if not {"Age", "Status"}.issubset(df.columns):
+        st.error("Google Sheet does not have proper column headers (Age, Status). Please fix it.")
+    else:
+        # Filter for similar age group (±5 years)
+        age_filtered = df[(df["Age"] >= age - 5) & (df["Age"] <= age + 5)]
+
+        if len(age_filtered) > 0:
+            comparison = age_filtered["Status"].value_counts().reindex(
+                ["✅ Healthy", "⚠️ Watch Zone", "🛑 High Symptom Burden"], fill_value=0
+            )
+
+            # Chart
+            st.markdown("### 📊 How You Compare to Others in Your Age Group")
+            fig, ax = plt.subplots()
+            ax.bar(comparison.index, comparison.values, color=["#28A745", "#FFC107", "#DC3545"])
+            ax.set_ylabel("Number of Users")
+            ax.set_xlabel("Status")
+            ax.set_title(f"Symptom Status Distribution (Age {age}±5)")
+            st.pyplot(fig)
+        else:
+            st.info("Not enough data yet to show a comparison for your age group.")
