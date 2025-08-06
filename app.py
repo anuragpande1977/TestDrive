@@ -60,16 +60,16 @@ age = st.number_input("📅 Enter your age:", min_value=18, max_value=100, value
 questions = {
     "Energy & Vitality": {
         "energy": "I ocassionally feel low on energy or fatigue during the day.",
-        "recovery": "I take longer to recover from exercise or stress, than i did few years ago.",
+        "recovery": "I take longer to recover from exercise or stress, than i did a few years ago.",
         "sleep": "I ocassionally wake up feeling unrefreshed or tired."
     },
     "Mood & Motivation": {
         "mood": "I have occassional negative mood swinges and feel emotionally drained",
-        "focus": "I experience mental fog or difficulty concentrating.",
+        "focus": "I occasionally experience mental fog or difficulty concentrating.",
         "motivation": "I ocassionally lack motivation for exercise or physical activity."
     },
     "Physical Performance": {
-        "strength": "I feel a noticeable decline in my strength or endurance.",
+        "strength": "I feel a noticeable decline in my strength or endurance, than i did a few years ago.",
         "appearance": "I feel dissatisfied with my body composition (muscle vs. fat)."
     },
     "Sexual Health": {
