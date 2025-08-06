@@ -61,7 +61,7 @@ questions = {
     "Energy & Vitality": {
         "energy": "I ocassionally feel low on energy or fatigue during the day.",
         "recovery": "I take longer to recover from exercise or stress, than i did few years ago.",
-        "sleep": "I ocassionallyI have oc wake up feeling unrefreshed or tired."
+        "sleep": "I ocassionally wake up feeling unrefreshed or tired."
     },
     "Mood & Motivation": {
         "mood": "I have occassional negative mood swinges and feel emotionally drained",
