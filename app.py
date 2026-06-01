@@ -161,7 +161,7 @@ if st.button("🚦 Check My Status"):
 
     if supabase is not None:
         try:
-            supabase.table(TABLE).insert(record).execute()
+            supabase.table(TABLE).insert(record, returning="minimal").execute()
         except Exception as e:
             st.warning(f"Your result was calculated but could not be saved: {e}")
 
